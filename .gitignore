@@ -24,5 +24,6 @@
 
 # Executables
 *.exe
+RayTracer
 *.out
 *.app

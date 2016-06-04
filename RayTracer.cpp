@@ -14,7 +14,7 @@
 #include <GL/glut.h>
 using namespace std;
 
-const float WIDTH = 20.0;  
+const float WIDTH = 20.0;
 const float HEIGHT = 20.0;
 const float EDIST = 40.0;
 const int PPU = 30;     //Total 600x600 pixels
@@ -30,7 +30,7 @@ Vector light;
 Color backgroundCol;
 
 //A useful struct
-struct PointBundle   
+struct PointBundle
 {
 	Vector point;
 	int index;
@@ -69,37 +69,33 @@ PointBundle closestPt(Vector pos, Vector dir)
 
 /*
 * Computes the colour value obtained by tracing a ray.
-* If reflections and refractions are to be included, then secondary rays will 
+* If reflections and refractions are to be included, then secondary rays will
 * have to be traced from the point, by converting this method to a recursive
 * procedure.
 */
 
 Color trace(Vector pos, Vector dir, int step)
 {
-	
-	
 	Color colorSum;
-    PointBundle q = closestPt(pos, dir);
-    
-    Vector lightVector = light - q.point;
+  PointBundle q = closestPt(pos, dir);
+
+  Vector lightVector = light - q.point;
 	float lightDist = lightVector.length();
 	lightVector.normalise();
-	
-	PointBundle s = closestPt(q.point, lightVector);
-	
 
-    if(q.index == -1) return backgroundCol;        //no intersection
+	PointBundle s = closestPt(q.point, lightVector);
+  if(q.index == -1) return backgroundCol;        //no intersection
 
 
 	Color col = sceneObjects[q.index]->getColor(); //Object's colour
-	Vector n = sceneObjects[q.index]->normal(q.point); 
+	Vector n = sceneObjects[q.index]->normal(q.point);
 	Vector l = light - q.point;
 	Vector v(-dir.x, -dir.y, -dir.z); //View vector;
 
-	
+
 	l.normalise();
 	float lDotn = l.dot(n);
-	
+
 	if (lDotn <= 0) {
 		colorSum = col.phongLight(backgroundCol, 0.0, 0.0);
 	} else if (s.index>-1 && s.dist < lightDist) {
@@ -107,7 +103,7 @@ Color trace(Vector pos, Vector dir, int step)
 	} else {
 		Vector r = ((n * 2) * lDotn) - l; // r = 2(L.n)n – L
 		r.normalise();
-		
+
 
 		float rDotv = r.dot(v);
 		float spec;
@@ -121,7 +117,7 @@ Color trace(Vector pos, Vector dir, int step)
 	if (q.index == 0 && step < MAX_STEPS) {
 		float nDotV = n.dot(v);
 		Vector reflectionVector = ((n*2) * (nDotV)) - v;
-		float reflCoeff = 1.0;
+		float reflCoeff = 0.4;
 		Color reflectionCol = trace(q.point, reflectionVector, step+1);
 		colorSum.combineColor(reflectionCol, reflCoeff);
 	}
@@ -177,20 +173,20 @@ void initialize()
 {
 	//Iniitialize background colour and light's position
 	backgroundCol = Color::GRAY;
-	light = Vector(10.0, 40.0, -5.0);
+	light = Vector(-30.0, 50.0, -5.0);
 
 	//Add spheres to the list of scene objects here.
 	Sphere *sphere1 = new Sphere(Vector(-5, 6, -50), 2.0, Color::RED);
 	Sphere *sphere2 = new Sphere(Vector(0, 0, -55), 6.0, Color::GRAY);
 	Sphere *sphere3 = new Sphere(Vector(5, 4, -45), 2.75, Color::GREEN);
 	Plane *plane = new Plane(Vector(-10, -10, -40), Vector(10, -10, -40),
-		Vector(10., -10, -80), Vector(-10., -10, -80), Color(1, 0, 1));
+		Vector(10., -10, -80), Vector(-10., -10, -80), Color::WHITE);
 
 	sceneObjects.push_back(sphere2);
 	sceneObjects.push_back(sphere1);
 	sceneObjects.push_back(sphere3);
 	sceneObjects.push_back(plane);
-	
+
 	//The following are OpenGL functions used only for drawing the pixels
 	//of the ray-traced scene.
     glMatrixMode(GL_PROJECTION);
@@ -201,7 +197,7 @@ void initialize()
 }
 
 
-int main(int argc, char *argv[]) 
+int main(int argc, char *argv[])
 {
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB );

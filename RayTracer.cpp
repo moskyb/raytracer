@@ -11,6 +11,7 @@
 #include "Plane.h"
 #include "Color.h"
 #include "Object.h"
+#include "TextureBMP.h"
 #include <GL/glut.h>
 using namespace std;
 
@@ -23,11 +24,13 @@ const float XMIN = -WIDTH * 0.5;
 const float XMAX =  WIDTH * 0.5;
 const float YMIN = -HEIGHT * 0.5;
 const float YMAX =  HEIGHT * 0.5;
+const float PI = 3.14159265359;
 
 vector<Object*> sceneObjects;
 
 Vector light;
 Color backgroundCol;
+TextureBMP tex;
 
 //A useful struct
 struct PointBundle
@@ -96,6 +99,8 @@ Color trace(Vector pos, Vector dir, int step)
 	l.normalise();
 	float lDotn = l.dot(n);
 
+
+
 	if (lDotn <= 0) {
 		colorSum = col.phongLight(backgroundCol, 0.0, 0.0);
 	} else if (s.index>-1 && s.dist < lightDist) {
@@ -110,10 +115,23 @@ Color trace(Vector pos, Vector dir, int step)
 		if(rDotv < 0) {
 			spec = 0.0;
 		} else {
-			spec = pow(rDotv, 10); //Phong exponent = 10
+			spec = pow(rDotv, 5); //Phong exponent = 10
 		}
 		colorSum = col.phongLight(backgroundCol, lDotn, spec);
 	}
+
+	if (q.index == 2 && step < MAX_STEPS){
+		Vector p = q.point;
+		float u = 0.5 + ((atan2(n.z, n.x)) / 2 * PI);
+		float v = 0.5 - ((asin(n.y)) / PI);
+		printf("p.x = %f\n", p.x);
+		printf("p.y = %f\n", p.y);
+		printf("p.z = %f\n", p.z);
+		printf("U = %f\n", u);
+		printf("V = %f\n", v);
+		colorSum = tex.getColorAt(u,v);
+	}
+
 	if (q.index == 0 && step < MAX_STEPS) {
 		float nDotV = n.dot(v);
 		Vector reflectionVector = ((n*2) * (nDotV)) - v;
@@ -121,6 +139,7 @@ Color trace(Vector pos, Vector dir, int step)
 		Color reflectionCol = trace(q.point, reflectionVector, step+1);
 		colorSum.combineColor(reflectionCol, reflCoeff);
 	}
+
 	return colorSum;
 }
 
@@ -155,11 +174,11 @@ void display()
 		    dir.normalise();			//Normalise this direction
 
 		    Color col = trace (eye, dir, 1); //Trace the primary ray and get the colour value
-			glColor3f(col.r, col.g, col.b);
-			glVertex2f(x1, y1);				//Draw each pixel with its color value
-			glVertex2f(x1 + pixelSize, y1);
-			glVertex2f(x1 + pixelSize, y1 + pixelSize);
-			glVertex2f(x1, y1 + pixelSize);
+				glColor3f(col.r, col.g, col.b);
+				glVertex2f(x1, y1);				//Draw each pixel with its color value
+				glVertex2f(x1 + pixelSize, y1);
+				glVertex2f(x1 + pixelSize, y1 + pixelSize);
+				glVertex2f(x1, y1 + pixelSize);
         }
     }
 
@@ -175,10 +194,13 @@ void initialize()
 	backgroundCol = Color::GRAY;
 	light = Vector(-30.0, 50.0, -5.0);
 
+	tex = TextureBMP("Earth.bmp");
+
+
 	//Add spheres to the list of scene objects here.
 	Sphere *sphere1 = new Sphere(Vector(-5, 6, -50), 2.0, Color::RED);
 	Sphere *sphere2 = new Sphere(Vector(0, 0, -55), 6.0, Color::GRAY);
-	Sphere *sphere3 = new Sphere(Vector(5, 4, -45), 2.75, Color::GREEN);
+	Sphere *sphere3 = new Sphere(Vector(5, 4, -45), 2.75, Color::WHITE);
 	Plane *plane = new Plane(Vector(-10, -10, -40), Vector(10, -10, -40),
 		Vector(10., -10, -80), Vector(-10., -10, -80), Color::WHITE);
 

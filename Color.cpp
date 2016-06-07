@@ -8,7 +8,7 @@
 #include "Color.h"
 
 //Multiplies the current colour by a scalar factor
-void Color::scaleColor(float scaleFactor) 
+void Color::scaleColor(float scaleFactor)
 {
     r = r * scaleFactor;
     g = g * scaleFactor;
@@ -26,9 +26,10 @@ void Color::combineColor(Color col)
 //Adds a scaled version of a colour to the current colour
 void Color::combineColor(Color col, float scaleFactor)
 {
-    r +=  scaleFactor * col.r;
-    g +=  scaleFactor * col.g;
-    b +=  scaleFactor * col.b;
+    r = r * (1 - scaleFactor) +  scaleFactor * col.r;
+    g = g * (1 - scaleFactor) +  scaleFactor * col.g;
+    b = b * (1 - scaleFactor) +  scaleFactor * col.b;
+
 }
 
 //Phong lighting equations:

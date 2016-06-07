@@ -30,7 +30,8 @@ vector<Object*> sceneObjects;
 
 Vector light;
 Color backgroundCol;
-TextureBMP tex;
+TextureBMP earth;
+TextureBMP checker;
 
 //A useful struct
 struct PointBundle
@@ -51,7 +52,7 @@ PointBundle closestPt(Vector pos, Vector dir)
 
 	PointBundle out = {point, -1, 0.0};
 
-    for(int i = 0;  i < sceneObjects.size();  i++)
+    for(unsigned int i = 0;  i < sceneObjects.size();  i++)
 	{
         float t = sceneObjects[i]->intersect(pos, dir);
 		if(t > 0)        //Intersects the object
@@ -91,6 +92,9 @@ Color trace(Vector pos, Vector dir, int step)
 
 
 	Color col = sceneObjects[q.index]->getColor(); //Object's colour
+
+
+
 	Vector n = sceneObjects[q.index]->normal(q.point);
 	Vector l = light - q.point;
 	Vector v(-dir.x, -dir.y, -dir.z); //View vector;
@@ -99,7 +103,22 @@ Color trace(Vector pos, Vector dir, int step)
 	l.normalise();
 	float lDotn = l.dot(n);
 
+	if (q.index == 2 && step < MAX_STEPS){
+		float u = asin(n.x) / PI + 0.5;
+		float v = asin(n.y) / PI + 0.5;
+		col = earth.getColorAt(u,v);
+	}
 
+	if (q.index == 3 && step < MAX_STEPS) {
+
+		float u = (int) ((q.point.x - 10) / 3) % 2;
+		float v = (int) ((q.point.z + 20) / 3) % 2;
+		if ((u && v) || (!u && !v)) {
+			col = Color::WHITE;
+		} else {
+			col = Color::BLACK;
+		}
+	}
 
 	if (lDotn <= 0) {
 		colorSum = col.phongLight(backgroundCol, 0.0, 0.0);
@@ -120,18 +139,6 @@ Color trace(Vector pos, Vector dir, int step)
 		colorSum = col.phongLight(backgroundCol, lDotn, spec);
 	}
 
-	if (q.index == 2 && step < MAX_STEPS){
-		Vector p = q.point;
-		float u = 0.5 + ((atan2(n.z, n.x)) / 2 * PI);
-		float v = 0.5 - ((asin(n.y)) / PI);
-		printf("p.x = %f\n", p.x);
-		printf("p.y = %f\n", p.y);
-		printf("p.z = %f\n", p.z);
-		printf("U = %f\n", u);
-		printf("V = %f\n", v);
-		colorSum = tex.getColorAt(u,v);
-	}
-
 	if (q.index == 0 && step < MAX_STEPS) {
 		float nDotV = n.dot(v);
 		Vector reflectionVector = ((n*2) * (nDotV)) - v;
@@ -139,6 +146,8 @@ Color trace(Vector pos, Vector dir, int step)
 		Color reflectionCol = trace(q.point, reflectionVector, step+1);
 		colorSum.combineColor(reflectionCol, reflCoeff);
 	}
+
+
 
 	return colorSum;
 }
@@ -194,20 +203,52 @@ void initialize()
 	backgroundCol = Color::GRAY;
 	light = Vector(-30.0, 50.0, -5.0);
 
-	tex = TextureBMP("Earth.bmp");
+	earth = TextureBMP((char*)"Earth.bmp");
 
 
 	//Add spheres to the list of scene objects here.
 	Sphere *sphere1 = new Sphere(Vector(-5, 6, -50), 2.0, Color::RED);
-	Sphere *sphere2 = new Sphere(Vector(0, 0, -55), 6.0, Color::GRAY);
+	Sphere *sphere2 = new Sphere(Vector(2, 0, -55), 6.0, Color::GRAY);
 	Sphere *sphere3 = new Sphere(Vector(5, 4, -45), 2.75, Color::WHITE);
+
 	Plane *plane = new Plane(Vector(-10, -10, -40), Vector(10, -10, -40),
 		Vector(10., -10, -80), Vector(-10., -10, -80), Color::WHITE);
+
+
+	/*
+	A Lazy cuboid; Only the faces visible from the viewport are rendered
+	Other faces are included but commented out so that you know that I actually
+	know what I'm doing
+	*/
+
+	// Plane *cubeBottom = new Plane(Vector(-5, -10, -45), Vector(0., -10, -45),
+	// 	Vector(0., -10, -55), Vector(-5., -10, -55), Color::RED);
+	// Plane *cubeLeft = new Plane(Vector(-5, -10, -55), Vector(-5, -10, -45),
+	//   Vector(-5, -7, -45), Vector(-5, -7, -55), Color::BLUE);
+	// Plane *cubeBack = new Plane(Vector(-5, -10, -55), Vector(-0, -10, -55),
+	// 	Vector(0, -7, -55), Vector(-5, -7, -55), Color::RED);
+	Plane *cubeFront = new Plane(Vector(-5, -10, -45), Vector(-0, -10, -45),
+		Vector(0, -7, -45), Vector(-5, -7, -45), Color::BLUE);
+	Plane *cubeTop = new Plane(Vector(-5, -7, -45), Vector(0., -7, -45),
+	Vector(0., -7, -55), Vector(-5., -7, -55), Color::BLUE);
+	Plane *cubeRight = new Plane(Vector(0, -10, -55), Vector(0, -10, -45),
+		Vector(0, -7, -45), Vector(0, -7, -55), Color::RED);
+
 
 	sceneObjects.push_back(sphere2);
 	sceneObjects.push_back(sphere1);
 	sceneObjects.push_back(sphere3);
 	sceneObjects.push_back(plane);
+	// sceneObjects.push_back(cubeBottom);
+	// sceneObjects.push_back(cubeLeft);
+	// sceneObjects.push_back(cubeBack);
+	sceneObjects.push_back(cubeFront);
+	sceneObjects.push_back(cubeTop);
+	sceneObjects.push_back(cubeRight);
+
+
+
+
 
 	//The following are OpenGL functions used only for drawing the pixels
 	//of the ray-traced scene.

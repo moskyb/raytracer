@@ -10,7 +10,7 @@
 #include <math.h>
 
 /**
-* Sphere's intersection method.  The input is a ray (pos, dir). 
+* Sphere's intersection method.  The input is a ray (pos, dir).
 */
 float Sphere::intersect(Vector pos, Vector dir)
 {
@@ -19,18 +19,22 @@ float Sphere::intersect(Vector pos, Vector dir)
     float len = vdif.length();
     float c = len*len - radius*radius;
     float delta = b*b - c;
-   
-	if(fabs(delta) < 0.001) return -1.0; 
-    if(delta < 0.0) return -1.0;
 
-    float t1 = -b - sqrt(delta);
-    float t2 = -b + sqrt(delta);
-    if(fabs(t1) < 0.001 )
-    {
-        if (t2 > 0) return t2;
-        else t1 = -1.0;
-    }
-    if(fabs(t2) < 0.001 ) t2 = -1.0;
+	if(fabs(delta) < 0.001) {
+    return -1.0;
+  }
+  if(delta < 0.0) {
+    return -1.0;
+  }
+
+  float t1 = -b - sqrt(delta);
+  float t2 = -b + sqrt(delta);
+  if(fabs(t1) < 0.001 )
+  {
+      if (t2 > 0) return t2;
+      else t1 = -1.0;
+  }
+  if(fabs(t2) < 0.001 ) t2 = -1.0;
 
 	return (t1 < t2)? t1: t2;
 }

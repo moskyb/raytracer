@@ -17,13 +17,13 @@ private:
 
   public:
   	Cylinder()
-  		: origin(Vector()), radius(1)  //Default constructor creates a unit Cylinder
+  		: origin(Vector()), radius(1), height(2)  //Default constructor creates a unit Cylinder
   	{
   		color = Color::WHITE;
   	};
 
-      Cylinder(Vector c, float r, Color col)
-  		: origin(c), radius(r)
+      Cylinder(Vector c, float r, float height, Color col)
+  		: origin(c), radius(r), height(height)
   	{
   		color = col;
   	};

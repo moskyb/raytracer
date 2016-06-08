@@ -9,16 +9,30 @@
 #include "Sphere.h"
 #include <math.h>
 
+//TEMP
+#include <iostream>
+#include <cmath>
+#include <vector>
+#include "Vector.h"
+#include "Cylinder.h"
+#include "Sphere.h"
+#include "Plane.h"
+#include "Color.h"
+#include "Object.h"
+#include "TextureBMP.h"
+#include <GL/glut.h>
+using namespace std;
+
 /**
 * Sphere's intersection method.  The input is a ray (pos, dir).
 */
 float Sphere::intersect(Vector pos, Vector dir)
 {
-    Vector vdif = pos - center;
-    float b = dir.dot(vdif);
-    float len = vdif.length();
-    float c = len*len - radius*radius;
-    float delta = b*b - c;
+  Vector vdif = pos - center;
+  float b = dir.dot(vdif);
+  float len = vdif.length();
+  float c = len*len - radius*radius;
+  float delta = b*b - c;
 
 	if(fabs(delta) < 0.001) {
     return -1.0;

@@ -7,6 +7,7 @@
 #include <cmath>
 #include <vector>
 #include "Vector.h"
+#include "Cylinder.h"
 #include "Sphere.h"
 #include "Plane.h"
 #include "Color.h"
@@ -206,17 +207,19 @@ void initialize()
 	earth = TextureBMP((char*)"Earth.bmp");
 
 
-	//Add spheres to the list of scene objects here.
 	Sphere *sphere1 = new Sphere(Vector(-5, 6, -50), 2.0, Color::RED);
 	Sphere *sphere2 = new Sphere(Vector(2, 0, -55), 6.0, Color::GRAY);
 	Sphere *sphere3 = new Sphere(Vector(5, 4, -45), 2.75, Color::WHITE);
+
+	Cylinder *cyl = new Cylinder(Vector(0,0,-50), 2, 2, Color::GREEN);
 
 	Plane *plane = new Plane(Vector(-10, -10, -40), Vector(10, -10, -40),
 		Vector(10., -10, -80), Vector(-10., -10, -80), Color::WHITE);
 
 
 	/*
-	A Lazy cuboid; Only the faces visible from the viewport are rendered
+	A Lazy cuboid	Vector n = sceneObjects[q.index]->normal(q.point);
+; Only the faces visible from the viewport are rendered
 	Other faces are included but commented out so that you know that I actually
 	know what I'm doing
 	*/
@@ -234,17 +237,20 @@ void initialize()
 	Plane *cubeRight = new Plane(Vector(0, -10, -55), Vector(0, -10, -45),
 		Vector(0, -7, -45), Vector(0, -7, -55), Color::RED);
 
-
 	sceneObjects.push_back(sphere2);
 	sceneObjects.push_back(sphere1);
 	sceneObjects.push_back(sphere3);
 	sceneObjects.push_back(plane);
+	sceneObjects.push_back(cyl);
+
 	// sceneObjects.push_back(cubeBottom);
 	// sceneObjects.push_back(cubeLeft);
 	// sceneObjects.push_back(cubeBack);
 	sceneObjects.push_back(cubeFront);
 	sceneObjects.push_back(cubeTop);
 	sceneObjects.push_back(cubeRight);
+
+
 
 
 

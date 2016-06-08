@@ -121,6 +121,11 @@ Color trace(Vector pos, Vector dir, int step)
 		}
 	}
 
+	if (q.index == 4 && step < MAX_STEPS) {
+		col.combineColor(Color::BLUE, .5);
+		step++;
+	}
+
 	if (lDotn <= 0) {
 		colorSum = col.phongLight(backgroundCol, 0.0, 0.0);
 	} else if (s.index>-1 && s.dist < lightDist) {
@@ -147,9 +152,6 @@ Color trace(Vector pos, Vector dir, int step)
 		Color reflectionCol = trace(q.point, reflectionVector, step+1);
 		colorSum.combineColor(reflectionCol, reflCoeff);
 	}
-
-
-
 	return colorSum;
 }
 
@@ -211,7 +213,8 @@ void initialize()
 	Sphere *sphere2 = new Sphere(Vector(2, 0, -55), 6.0, Color::GRAY);
 	Sphere *sphere3 = new Sphere(Vector(5, 4, -45), 2.75, Color::WHITE);
 
-	Cylinder *cyl = new Cylinder(Vector(0,0,-50), 2, 2, Color::GREEN);
+	Cylinder *cyl = new Cylinder(Vector(5,-10,-45), 2, 5, Color::GREEN);
+	Sphere *sphere4 = new Sphere(Vector(5,-3,-45), 3, Color::BLUE);
 
 	Plane *plane = new Plane(Vector(-10, -10, -40), Vector(10, -10, -40),
 		Vector(10., -10, -80), Vector(-10., -10, -80), Color::WHITE);
@@ -237,11 +240,12 @@ void initialize()
 	Plane *cubeRight = new Plane(Vector(0, -10, -55), Vector(0, -10, -45),
 		Vector(0, -7, -45), Vector(0, -7, -55), Color::RED);
 
-	sceneObjects.push_back(sphere2);
-	sceneObjects.push_back(sphere1);
-	sceneObjects.push_back(sphere3);
-	sceneObjects.push_back(plane);
-	sceneObjects.push_back(cyl);
+	sceneObjects.push_back(sphere2); // 0
+	sceneObjects.push_back(sphere1); // 1
+	sceneObjects.push_back(sphere3); // 2
+	sceneObjects.push_back(plane);   // 3
+	sceneObjects.push_back(sphere4); // 4
+	sceneObjects.push_back(cyl);     // 5
 
 	// sceneObjects.push_back(cubeBottom);
 	// sceneObjects.push_back(cubeLeft);

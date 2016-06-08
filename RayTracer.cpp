@@ -26,6 +26,8 @@ const float XMAX =  WIDTH * 0.5;
 const float YMIN = -HEIGHT * 0.5;
 const float YMAX =  HEIGHT * 0.5;
 const float PI = 3.14159265359;
+const float DIAMOND = 2.4;
+const float AIR = 1;
 
 vector<Object*> sceneObjects;
 
@@ -48,14 +50,14 @@ struct PointBundle
 */
 PointBundle closestPt(Vector pos, Vector dir)
 {
-    Vector  point(0, 0, 0);
+  Vector  point(0, 0, 0);
 	float min = 10000.0;
 
 	PointBundle out = {point, -1, 0.0};
 
-    for(unsigned int i = 0;  i < sceneObjects.size();  i++)
+  for(unsigned int i = 0;  i < sceneObjects.size();  i++)
 	{
-        float t = sceneObjects[i]->intersect(pos, dir);
+    float t = sceneObjects[i]->intersect(pos, dir);
 		if(t > 0)        //Intersects the object
 		{
 			point = pos + dir*t;
@@ -122,8 +124,17 @@ Color trace(Vector pos, Vector dir, int step)
 	}
 
 	if (q.index == 4 && step < MAX_STEPS) {
-		col.combineColor(Color::BLUE, .5);
-		step++;
+		Vector entryPt = q.point;
+
+		float cosThetaT1 = sqrt(1 - (pow(AIR / DIAMOND, 2) * (1 - pow(dir.dot(n), 2)) ));
+		Vector g1Dir = (dir * (AIR/DIAMOND)) - n * ((AIR/DIAMOND) * dir.dot(n) + cosThetaT1);
+
+		Vector exitPt = closestPt(entryPt, g1Dir).point;
+		Vector n2 = sceneObjects[q.index]->normal(exitPt);
+
+		float cosThetaT2 = sqrt(1 - (pow(DIAMOND / AIR, 2) * (1 - pow(g1Dir.dot(n2), 2)) ));
+		Vector g2Dir = (g1Dir * (DIAMOND / AIR)) - n2 * ((AIR/DIAMOND) * dir.dot(n2) + cosThetaT2);
+		col = trace(exitPt, g2Dir, step + 1);
 	}
 
 	if (lDotn <= 0) {
@@ -214,10 +225,11 @@ void initialize()
 	Sphere *sphere3 = new Sphere(Vector(5, 4, -45), 2.75, Color::WHITE);
 
 	Cylinder *cyl = new Cylinder(Vector(5,-10,-45), 2, 5, Color::GREEN);
+
 	Sphere *sphere4 = new Sphere(Vector(5,-3,-45), 3, Color::BLUE);
 
-	Plane *plane = new Plane(Vector(-10, -10, -40), Vector(10, -10, -40),
-		Vector(10., -10, -80), Vector(-10., -10, -80), Color::WHITE);
+	Plane *plane = new Plane(Vector(-40, -10, -40), Vector(40, -10, -40),
+		Vector(40., -10, -120), Vector(-40., -10, -120), Color::WHITE);
 
 
 	/*

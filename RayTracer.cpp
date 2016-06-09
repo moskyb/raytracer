@@ -251,17 +251,17 @@ void initialize()
 		Vector(0, -7, -45), Vector(-5, -7, -45), Color::BLUE);
 	Plane *cubeTop = new Plane(Vector(-5, -7, -45), Vector(0., -7, -45),
 	Vector(0., -7, -55), Vector(-5., -7, -55), Color::BLUE);
-	Plane *cubeRight = new Plane(Vector(0, -10, -55), Vector(0, -10, -45);
+	Plane *cubeRight = new Plane(Vector(0, -10, -55), Vector(0, -10, -45),
+		Vector(0, -7, -45), Vector(0, -7, -55), Color::RED);
 
-	sceneObjects.push_back(sphere2); // 0
-	sceneObjects.push_back(sphere1); // 1
-	sceneObjects.push_back(sphere3); // 2
-	sceneObjects.push_back(plane);   // 3
-	sceneObjects.push_back(sphere4); // 4
-	sceneObjects.push_back(cyl);     // 5
+	sceneObjects.push_back(sphere2);  // 0
+	sceneObjects.push_back(sphere1);  // 1
+	sceneObjects.push_back(sphere3);  // 2
+	sceneObjects.push_back(plane);    // 3
+	sceneObjects.push_back(sphere4);  // 4
+	sceneObjects.push_back(cyl);      // 5
 
-	sceneObjects.push_back(cubeBottom); // etc...
-	sceneObjects.push_back(cubeLeft);
+	sceneObjects.push_back(cubeLeft); // etc...
 	sceneObjects.push_back(cubeBack);
 	sceneObjects.push_back(cubeFront);
 	sceneObjects.push_back(cubeTop);

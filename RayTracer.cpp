@@ -93,10 +93,7 @@ Color trace(Vector pos, Vector dir, int step)
 	PointBundle s = closestPt(q.point, lightVector);
   if(q.index == -1) return backgroundCol;        //no intersection
 
-
 	Color col = sceneObjects[q.index]->getColor(); //Object's colour
-
-
 
 	Vector n = sceneObjects[q.index]->normal(q.point);
 	Vector l = light - q.point;
@@ -123,19 +120,24 @@ Color trace(Vector pos, Vector dir, int step)
 		}
 	}
 
-	if (q.index == 4 && step < MAX_STEPS) {
-		Vector entryPt = q.point;
+	//////////////////// BROKEN REFRACTION ////////////////////////////////////
+	////////////// UNCOMMENT IF YOU LIKE BROKEN STUFF /////////////////////////
 
-		float cosThetaT1 = sqrt(1 - (pow(AIR / DIAMOND, 2) * (1 - pow(dir.dot(n), 2)) ));
-		Vector g1Dir = (dir * (AIR/DIAMOND)) - n * ((AIR/DIAMOND) * dir.dot(n) + cosThetaT1);
+	// if (q.index == 4 && step < MAX_STEPS) {
+	// 	Vector entryPt = q.point;
+	//
+	// 	float cosThetaT1 = sqrt(1 - (pow(AIR / DIAMOND, 2) * (1 - pow(dir.dot(n), 2)) ));
+	// 	Vector g1Dir = (dir * (AIR/DIAMOND)) - n * ((AIR/DIAMOND) * dir.dot(n) + cosThetaT1);
+	//
+	// 	Vector exitPt = closestPt(entryPt, g1Dir).point;
+	// 	Vector n2 = sceneObjects[q.index]->normal(exitPt);
+	//
+	// 	float cosThetaT2 = sqrt(1 - (pow(DIAMOND / AIR, 2) * (1 - pow(g1Dir.dot(n2), 2)) ));
+	// 	Vector g2Dir = (g1Dir * (DIAMOND / AIR)) - n2 * ((AIR/DIAMOND) * dir.dot(n2) + cosThetaT2);
+	// 	col = trace(exitPt, g2Dir, step + 1);
+	// }
 
-		Vector exitPt = closestPt(entryPt, g1Dir).point;
-		Vector n2 = sceneObjects[q.index]->normal(exitPt);
 
-		float cosThetaT2 = sqrt(1 - (pow(DIAMOND / AIR, 2) * (1 - pow(g1Dir.dot(n2), 2)) ));
-		Vector g2Dir = (g1Dir * (DIAMOND / AIR)) - n2 * ((AIR/DIAMOND) * dir.dot(n2) + cosThetaT2);
-		col = trace(exitPt, g2Dir, step + 1);
-	}
 
 	if (lDotn <= 0) {
 		colorSum = col.phongLight(backgroundCol, 0.0, 0.0);
@@ -192,7 +194,8 @@ void display()
 			y1 = YMIN + j*pixelSize;
 			yc = y1 + halfPixelSize;
 
-		    Vector dir(xc, yc, -EDIST);	//direction of the primary ray
+		    Vector dir(xc, yc, -EDIST);	//direction of the primary ray		} else
+			spec = 0.0;
 
 		    dir.normalise();			//Normalise this direction
 
@@ -221,36 +224,34 @@ void initialize()
 
 
 	Sphere *sphere1 = new Sphere(Vector(-5, 6, -50), 2.0, Color::RED);
-	Sphere *sphere2 = new Sphere(Vector(2, 0, -55), 6.0, Color::GRAY);
+	Sphere *sphere2 = new Sphere(Vector(0, 0, -55), 6.0, Color::GRAY);
 	Sphere *sphere3 = new Sphere(Vector(5, 4, -45), 2.75, Color::WHITE);
 
-	Cylinder *cyl = new Cylinder(Vector(5,-10,-45), 2, 5, Color::GREEN);
+	Cylinder *cyl = new Cylinder(Vector(7,-10,-45), 2, 5, Color::GREEN);
 
-	Sphere *sphere4 = new Sphere(Vector(5,-3,-45), 3, Color::BLUE);
+	Sphere *sphere4 = new Sphere(Vector(7,-3,-45), 3, Color::BLUE);
 
 	Plane *plane = new Plane(Vector(-40, -10, -40), Vector(40, -10, -40),
 		Vector(40., -10, -120), Vector(-40., -10, -120), Color::WHITE);
 
 
 	/*
-	A Lazy cuboid	Vector n = sceneObjects[q.index]->normal(q.point);
-; Only the faces visible from the viewport are rendered
-	Other faces are included but commented out so that you know that I actually
-	know what I'm doing
+	A Lazy cuboid
+; Bottom, left and back faces can be removed to improve performance, as they're not
+	visible from the viewport or in the reflection
 	*/
 
-	// Plane *cubeBottom = new Plane(Vector(-5, -10, -45), Vector(0., -10, -45),
-	// 	Vector(0., -10, -55), Vector(-5., -10, -55), Color::RED);
-	// Plane *cubeLeft = new Plane(Vector(-5, -10, -55), Vector(-5, -10, -45),
-	//   Vector(-5, -7, -45), Vector(-5, -7, -55), Color::BLUE);
-	// Plane *cubeBack = new Plane(Vector(-5, -10, -55), Vector(-0, -10, -55),
-	// 	Vector(0, -7, -55), Vector(-5, -7, -55), Color::RED);
+	Plane *cubeBottom = new Plane(Vector(-5, -10, -45), Vector(0., -10, -45),
+		Vector(0., -10, -55), Vector(-5., -10, -55), Color::RED);
+	Plane *cubeLeft = new Plane(Vector(-5, -10, -55), Vector(-5, -10, -45),
+	  Vector(-5, -7, -45), Vector(-5, -7, -55), Color::BLUE);
+	Plane *cubeBack = new Plane(Vector(-5, -10, -55), Vector(-0, -10, -55),
+		Vector(0, -7, -55), Vector(-5, -7, -55), Color::RED);
 	Plane *cubeFront = new Plane(Vector(-5, -10, -45), Vector(-0, -10, -45),
 		Vector(0, -7, -45), Vector(-5, -7, -45), Color::BLUE);
 	Plane *cubeTop = new Plane(Vector(-5, -7, -45), Vector(0., -7, -45),
 	Vector(0., -7, -55), Vector(-5., -7, -55), Color::BLUE);
-	Plane *cubeRight = new Plane(Vector(0, -10, -55), Vector(0, -10, -45),
-		Vector(0, -7, -45), Vector(0, -7, -55), Color::RED);
+	Plane *cubeRight = new Plane(Vector(0, -10, -55), Vector(0, -10, -45);
 
 	sceneObjects.push_back(sphere2); // 0
 	sceneObjects.push_back(sphere1); // 1
@@ -259,18 +260,12 @@ void initialize()
 	sceneObjects.push_back(sphere4); // 4
 	sceneObjects.push_back(cyl);     // 5
 
-	// sceneObjects.push_back(cubeBottom);
-	// sceneObjects.push_back(cubeLeft);
-	// sceneObjects.push_back(cubeBack);
+	sceneObjects.push_back(cubeBottom);
+	sceneObjects.push_back(cubeLeft);
+	sceneObjects.push_back(cubeBack);
 	sceneObjects.push_back(cubeFront);
 	sceneObjects.push_back(cubeTop);
 	sceneObjects.push_back(cubeRight);
-
-
-
-
-
-
 
 	//The following are OpenGL functions used only for drawing the pixels
 	//of the ray-traced scene.

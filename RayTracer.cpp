@@ -194,8 +194,7 @@ void display()
 			y1 = YMIN + j*pixelSize;
 			yc = y1 + halfPixelSize;
 
-		    Vector dir(xc, yc, -EDIST);	//direction of the primary ray		} else
-			spec = 0.0;
+		    Vector dir(xc, yc, -EDIST);	//direction of the primary ray
 
 		    dir.normalise();			//Normalise this direction
 
@@ -237,7 +236,7 @@ void initialize()
 
 	/*
 	A Lazy cuboid
-; Bottom, left and back faces can be removed to improve performance, as they're not
+  Bottom, left and back faces can be removed to improve performance, as they're not
 	visible from the viewport or in the reflection
 	*/
 
@@ -252,16 +251,17 @@ void initialize()
 	Plane *cubeTop = new Plane(Vector(-5, -7, -45), Vector(0., -7, -45),
 	Vector(0., -7, -55), Vector(-5., -7, -55), Color::BLUE);
 	Plane *cubeRight = new Plane(Vector(0, -10, -55), Vector(0, -10, -45),
-		Vector(0, -7, -45), Vector(0, -7, -55), Color::RED);
+			Vector(0, -7, -45), Vector(0, -7, -55), Color::RED);
 
-	sceneObjects.push_back(sphere2);  // 0
-	sceneObjects.push_back(sphere1);  // 1
-	sceneObjects.push_back(sphere3);  // 2
-	sceneObjects.push_back(plane);    // 3
-	sceneObjects.push_back(sphere4);  // 4
-	sceneObjects.push_back(cyl);      // 5
+	sceneObjects.push_back(sphere2); // 0
+	sceneObjects.push_back(sphere1); // 1
+	sceneObjects.push_back(sphere3); // 2
+	sceneObjects.push_back(plane);   // 3
+	sceneObjects.push_back(sphere4); // 4
+	sceneObjects.push_back(cyl);     // 5
 
-	sceneObjects.push_back(cubeLeft); // etc...
+	sceneObjects.push_back(cubeBottom);
+	sceneObjects.push_back(cubeLeft);
 	sceneObjects.push_back(cubeBack);
 	sceneObjects.push_back(cubeFront);
 	sceneObjects.push_back(cubeTop);

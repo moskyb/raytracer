@@ -260,7 +260,7 @@ void initialize()
 	sceneObjects.push_back(sphere4); // 4
 	sceneObjects.push_back(cyl);     // 5
 
-	sceneObjects.push_back(cubeBottom);
+	sceneObjects.push_back(cubeBottom); // etc...
 	sceneObjects.push_back(cubeLeft);
 	sceneObjects.push_back(cubeBack);
 	sceneObjects.push_back(cubeFront);
